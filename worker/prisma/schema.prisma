@@ -1,0 +1,43 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum log_status{
+  started
+  ended
+}
+
+model logs{
+  id Int @id @default(autoincrement())
+  site_url String
+  status log_status
+  started DateTime
+  ended DateTime ?
+  products_count Int ?
+  products products []
+  @@index([site_url])
+}
+model products{
+  id Int @id @default(autoincrement())
+  log_id Int 
+  site_url String
+  product_name String
+  product_description String ?
+  product_link String
+  product_status Boolean
+  product_price Int
+  product_image String
+  product_category String ?
+  exported Boolean @default(false)
+
+  log  logs @relation(fields: [log_id],references: [id])
+  @@index([site_url,log_id])
+}
